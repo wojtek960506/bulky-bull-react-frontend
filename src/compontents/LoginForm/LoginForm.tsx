@@ -1,10 +1,11 @@
 import { useState } from "react";
 
 type LoginFormProps = {
-  handleAuthToken: (authToken: string) => void
+  handleAuthToken: (authToken: string) => void;
+  handleUserId: (userId: string) => void;
 }
 
-export const LoginForm = ({ handleAuthToken }: LoginFormProps) => {
+export const LoginForm = ({ handleAuthToken, handleUserId }: LoginFormProps) => {
 
   const [ email, setEmail ] = useState('');
   const [ password, setPassword ] = useState('');
@@ -39,6 +40,7 @@ export const LoginForm = ({ handleAuthToken }: LoginFormProps) => {
       console.log('goo credentials')
       console.log(data);
       handleAuthToken(data.authToken)
+      handleUserId(data.user.id);
     } catch (err: any) {
       setError(err.message)
     } finally {
