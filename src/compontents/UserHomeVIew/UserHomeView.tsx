@@ -1,10 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
+import { useAuth } from "../../context/AuthContext";
 
-
-type UserHomeViewProps = {
-  authToken: string;
-  userId: string;
-}
 
 const wait = (duration: number) => {
   return new Promise(resolve => setTimeout(resolve, duration))
@@ -30,16 +26,19 @@ const fetchWorkouts = async (authToken: string, userId: string) => {
   return await response.json();
 }
 
-export const UserHomeView = ({ authToken, userId }: UserHomeViewProps) => {
+export const UserHomeView = () => {
+
+  const { authToken, userId, isAuthenticated, logout } = useAuth();
+  if (!isAuthenticated) return;
 
   const userQuery = useQuery({
     queryKey: ["user"],
-    queryFn: () => fetchUser(authToken, userId) 
+    queryFn: () => fetchUser(authToken!, userId!) 
   })
 
   const workoutsQuery = useQuery({
     queryKey: ["workouts"],
-    queryFn: () => fetchWorkouts(authToken, userId)
+    queryFn: () => fetchWorkouts(authToken!, userId!)
   })
 
   return (
@@ -52,6 +51,7 @@ export const UserHomeView = ({ authToken, userId }: UserHomeViewProps) => {
       {workoutsQuery.isLoading && <p>Loading workouts...</p>}
       {workoutsQuery.data && <p>Workouts number: {workoutsQuery.data.length}</p>}
 
+      <button onClick={logout}>Log Out</button>
     </>
   )
 }

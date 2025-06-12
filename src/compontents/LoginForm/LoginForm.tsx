@@ -1,11 +1,10 @@
 import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 
-type LoginFormProps = {
-  handleAuthToken: (authToken: string) => void;
-  handleUserId: (userId: string) => void;
-}
 
-export const LoginForm = ({ handleAuthToken, handleUserId }: LoginFormProps) => {
+export const LoginForm = () => {
+
+  const { login } = useAuth()
 
   const [ email, setEmail ] = useState('');
   const [ password, setPassword ] = useState('');
@@ -31,7 +30,7 @@ export const LoginForm = ({ handleAuthToken, handleUserId }: LoginFormProps) => 
         body: JSON.stringify({ email, password })
       })
 
-      const data = await response.json()
+      const data  = await response.json()
 
       if (!response.ok) {
         throw new Error (data.error.message || 'Login failed');
@@ -39,8 +38,7 @@ export const LoginForm = ({ handleAuthToken, handleUserId }: LoginFormProps) => 
 
       console.log('goo credentials')
       console.log(data);
-      handleAuthToken(data.authToken)
-      handleUserId(data.user.id);
+      login(data.authToken, data.user.id)
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -62,14 +60,15 @@ export const LoginForm = ({ handleAuthToken, handleUserId }: LoginFormProps) => 
         }}
         action={logInAction}
       >
-        <label>
-          Email
-          <input type="text" name="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
-        </label>
-        <label>
-          Password
-          <input type='password' name="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
-        </label>
+        <label htmlFor="email">Email</label>
+        <input type="text" name="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
+        <label htmlFor="password">Password</label>
+        <input 
+          type='password'
+          name="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
         <button type="submit">Log In</button>
         {loading && <p>Loading...</p>}
         {error && <p style={{ color: 'red' }}>{error}</p>}
